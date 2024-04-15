@@ -1,6 +1,6 @@
 import streamlit as st
 from PIL import Image
-import cv2
+
 # Page title
 st.set_page_config(page_title='Crie sua API key ', page_icon='🤖')
 st.title('🤖 Como criar sua API key?')
