@@ -1,7 +1,6 @@
 from source.modules.chat_pdf import ChatPDFAPI
 import streamlit as st
 from dataclasses import dataclass
-
 # Page title
 st.set_page_config(page_title='ChatBot UERJ', page_icon='🤖')
 st.title('🤖 ChatBot UERJ')
