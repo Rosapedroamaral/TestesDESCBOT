@@ -6,7 +6,7 @@ st.set_page_config(page_title='Crie sua API key ', page_icon='🤖')
 st.title('🤖 Como criar sua API key?')
 
 
-img = Image.open("TestesDESCBOT/DESCBOT_V_0_1/pages/descbot.jpg")
+img = Image.open(".\descbot.jpg")
 st.image(
     img,
     caption = "Olá!",
