@@ -22,5 +22,5 @@ st.write(
     Lá, você encontrará sua chave de API (API key).
     '''
 )
-st.link_button("Ir para o Streamlit Gallery", "https://streamlit.io/gallery")
+st.link_button("Crie sua key agora mesmo", "https://www.chatpdf.com/")
 
