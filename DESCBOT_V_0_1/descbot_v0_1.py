@@ -1,10 +1,6 @@
 from source.modules.chat_pdf import ChatPDFAPI
 import streamlit as st
 from dataclasses import dataclass
-if st.button("Alternar Modo"):
-    st.set_theme("dark")
-else:
-    st.set_theme("light")
 # Page title
 st.set_page_config(page_title='ChatBot UERJ', page_icon='🤖')
 st.title('🤖 ChatBot UERJ')
