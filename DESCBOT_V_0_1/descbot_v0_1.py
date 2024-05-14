@@ -17,7 +17,7 @@ if "user_key" not in st.session_state:
     st.session_state["user_key"] = ""
   
 st.subheader('Insira seu Documento e sua Key Para inicializar')
-user_key = st.text_input('Digite sua key:',st.session_state[user_key])
+user_key = st.text_input('Digite sua key:', key='chave')
 st.session_state["user_key"] = user_key
 uploaded_file = st.file_uploader('Envie um documento PDF:', type=['pdf'])
 
