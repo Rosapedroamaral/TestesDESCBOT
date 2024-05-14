@@ -22,7 +22,7 @@ user_key = st.text_input('Digite sua key:',st.session_state["user_key"])
 st.session_state["user_key"] = user_key
 
 
-uploaded_file = st.file_uploader('Envie um documento PDF:', type=['pdf'])
+uploaded_file = st.file_uploader('Envie um documento PDF:', type=['pdf'], st.session_state["uploaded_file"])
 st.session_state["uploaded_file"] = uploaded_file
 
 USER = "user"
