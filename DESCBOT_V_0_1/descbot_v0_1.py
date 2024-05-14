@@ -21,11 +21,9 @@ user_key = st.text_input('Digite sua key:',st.session_state["user_key"])
 
 st.session_state["user_key"] = user_key
 
-if "uploaded_file" not in st.session_state:
-    st.session_state["uploaded_file"] = ""
+
 uploaded_file = st.file_uploader('Envie um documento PDF:', type=['pdf'])
 
-st.session_state["uploaded_file"] = uploaded_file
 
 USER = "user"
 ASSISTANT = "assistant"
