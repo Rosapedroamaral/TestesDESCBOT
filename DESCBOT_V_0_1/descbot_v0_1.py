@@ -23,6 +23,7 @@ st.session_state["user_key"] = user_key
 
 
 uploaded_file = st.file_uploader('Envie um documento PDF:', type=['pdf'])
+st.session_state["uploaded_file"] = uploaded_file
 
 USER = "user"
 ASSISTANT = "assistant"
