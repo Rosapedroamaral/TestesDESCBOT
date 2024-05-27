@@ -227,9 +227,7 @@ if login():
     
     st.subheader('Insira seu Documento e sua Key Para inicializar')
     #last update1
-    login_sucesso, user_api_key = login()
-    if login_sucesso:
-        user_key = user_api_key if user_api_key else st.text_input('Digite sua key:', key='chave')
+    user_key = user_api_key if user_api_key else st.text_input('Digite sua key:', key='chave')
     uploaded_file = st.file_uploader('Envie um documento PDF:', type=['pdf'])
     
     USER = "user"
