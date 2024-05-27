@@ -172,14 +172,33 @@ def menu_principal():
 # Defina supabase_client no escopo global
 supabase_client = SupabaseClient(st.secrets["SUPABASE_URL"], st.secrets["SUPABASE_KEY"])
 
+
 def login():
     email = st.text_input("Digite seu email: ")
     senha = st.text_input("Digite sua senha: ", type="password")
-    if supabase_client.autentica_dados(email, senha):
-        return True
-    else:
-        st.error("Email ou senha inválidos")
-        return False
+    
+    # Botão para autenticar usuário
+    if st.button('Autenticar'):
+        if supabase_client.autentica_dados(email, senha):
+            st.success("Login bem-sucedido!")
+            return True
+        else:
+            st.error("Email ou senha inválidos")
+            return False
+
+    # Botão para criar novo usuário
+    if st.button('Criar novo usuário'):
+        nome = st.text_input("Digite seu nome para registro: ", key='nome_registro')
+        email_registro = st.text_input("Digite seu email para registro: ", key='email_registro')
+        senha_registro = st.text_input("Digite sua senha para registro: ", type="password", key='senha_registro')
+        
+        if nome and email_registro and senha_registro:
+            supabase_client.insere_dados(nome, email_registro, senha_registro)
+        else:
+            st.warning("Por favor, preencha todos os campos para registro.")
+
+
+
 
 # Page title
 st.set_page_config(page_title='ChatBot UERJ', page_icon='🤖')
