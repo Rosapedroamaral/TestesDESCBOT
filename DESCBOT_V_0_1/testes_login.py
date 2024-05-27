@@ -169,6 +169,9 @@ def menu_principal():
         else:
             print("Opção inválida. Tente novamente.")
 
+# Defina supabase_client no escopo global
+supabase_client = SupabaseClient(st.secrets["SUPABASE_URL"], st.secrets["SUPABASE_KEY"])
+
 def login():
     email = st.text_input("Digite seu email: ")
     senha = st.text_input("Digite sua senha: ", type="password")
