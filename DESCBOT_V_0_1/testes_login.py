@@ -184,12 +184,13 @@ def login():
         # Botão para autenticar usuário
         submit_button = st.form_submit_button('Autenticar')
         if submit_button:
-            if supabase_client.autentica_dados(email, senha):
+            sucesso, api_key = supabase_client.autentica_dados(email, senha)
+            if sucesso:
                 st.success("Login bem-sucedido!")
-                return True
+                return True, api_key
             else:
                 st.error("Email ou senha inválidos")
-                return False
+                return False, None
 
     # Movendo a criação de novo usuário para fora do formulário de login
     with st.form(key='new_user_form'):
@@ -225,7 +226,10 @@ if login():
     
     
     st.subheader('Insira seu Documento e sua Key Para inicializar')
-    user_key = st.text_input('Digite sua key:', key='chave')
+    #last update1
+    login_sucesso, user_api_key = login()
+    if login_sucesso:
+        user_key = user_api_key if user_api_key else st.text_input('Digite sua key:', key='chave')
     uploaded_file = st.file_uploader('Envie um documento PDF:', type=['pdf'])
     
     USER = "user"
