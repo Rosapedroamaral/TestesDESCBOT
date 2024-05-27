@@ -188,7 +188,8 @@ def login():
                 st.error("Email ou senha inválidos")
                 return False
 
-        # Botão para criar novo usuário
+    # Movendo a criação de novo usuário para fora do formulário de login
+    with st.form(key='new_user_form'):
         create_user_button = st.form_submit_button('Criar novo usuário')
         if create_user_button:
             nome = st.text_input("Digite seu nome para registro: ", key='nome_registro')
@@ -197,8 +198,10 @@ def login():
             
             if nome and email_registro and senha_registro:
                 supabase_client.insere_dados(nome, email_registro, senha_registro)
+                st.success("Usuário criado com sucesso! Por favor, autentique-se.")
             else:
                 st.warning("Por favor, preencha todos os campos para registro.")
+
 
 
 
