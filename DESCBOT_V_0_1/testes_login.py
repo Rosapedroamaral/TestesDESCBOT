@@ -177,29 +177,20 @@ supabase_client = SupabaseClient(st.secrets["SUPABASE_URL"], st.secrets["SUPABAS
 
 
 def login():
-    sucesso = False
-    api_key = None
-    with st.form(key='user_login_form'):
+    with st.form(key='user_form'):
         email = st.text_input("Digite seu email: ")
         senha = st.text_input("Digite sua senha: ", type="password")
         
         # Botão para autenticar usuário
         submit_button = st.form_submit_button('Autenticar')
         if submit_button:
-            sucesso, api_key = supabase_client.autentica_dados(email, senha)
-            if sucesso:
+            if supabase_client.autentica_dados(email, senha):
                 st.success("Login bem-sucedido!")
+                return True
             else:
                 st.error("Email ou senha inválidos")
-                
-    return sucesso, api_key
+                return False
 
-login_sucesso, user_api_key = login()
-if login_sucesso:
-    # Se o login for bem-sucedido, use a chave API do usuário
-    user_key = user_api_key
-    # Restante do seu código que depende do login bem-sucedido
-                
     # Movendo a criação de novo usuário para fora do formulário de login
     with st.form(key='new_user_form'):
         create_user_button = st.form_submit_button('Criar novo usuário')
@@ -223,11 +214,6 @@ if login_sucesso:
 # Page title
 st.set_page_config(page_title='ChatBot UERJ', page_icon='🤖')
 st.title('🤖 ChatBot UERJ')
-    
-login_sucesso, user_api_key = login()
-if login_sucesso:
-    # Se o login for bem-sucedido, use a chave API do usuário
-    user_key = user_api_key
 
 if login():
     with st.expander('Sobre essa aplicação'):
@@ -239,8 +225,56 @@ if login():
     
     
     st.subheader('Insira seu Documento e sua Key Para inicializar')
-    #last update1
-    user_key = user_api_key if user_api_key else st.text_input('Digite sua key:', key='chave')
+    user_key = st.text_input('Digite sua key:', key='chave')
+    uploaded_file = st.file_uploader('Envie um documento PDF:', type=['pdf'])
+    
+    USER = "user"
+    ASSISTANT = "assistant"
+    MESSAGES = "messages"
+    if (uploaded_file is not None) and (len(user_key)>0):
+        if (MESSAGES not in st.session_state):
+            file_contents = uploaded_file.read()
+            chat1 = ChatPDFAPI(api_key=user_key,file_content=file_contents)
+            st.session_state['CHAT']=chat1
+            bemvindo="Olá !!! O que deseja saber sobre esse Documento?"
+            st.session_state[MESSAGES] =  [{'role': ASSISTANT,'content':bemvindo}]
+    
+        for msg in st.session_state[MESSAGES]:
+            st.chat_message(msg.get('role')).write(msg.get('content'))
+    
+        prompt: str = st.chat_input("Escreva sua dúvida aqui:")
+    
+        if prompt and uploaded_file is not None and len(user_key)>0:
+            st.session_state[MESSAGES].append({'role': USER,'content':prompt})
+            st.chat_message(USER).write(prompt)
+            request=st.session_state[MESSAGES]
+            if len(st.session_state[MESSAGES])>6:
+                request= st.session_state[MESSAGES][-6:]
+            resposta = st.session_state['CHAT'].pergunta_pdf_with_context(request)
+            response = f"{resposta}"
+            st.session_state[MESSAGES].append({'role': ASSISTANT,'content':resposta})
+            st.chat_message(ASSISTANT).write(response) 
+
+
+
+
+
+
+# Page title
+st.set_page_config(page_title='ChatBot UERJ', page_icon='🤖')
+st.title('🤖 ChatBot UERJ')
+
+if login():
+    with st.expander('Sobre essa aplicação'):
+      st.markdown('*O que essa aplicação pode fazer?*')
+      st.info('Este projeto foi desenvolvido para facilitar a extração de informações e interações com documentos PDF por meio de uma interface de chat. Utilizando a biblioteca ChatPDF, é possível realizar operações como leitura de texto, busca por palavras-chave, marcação de trechos relevantes e muito mais, tudo de forma automatizada e intuitiva.')
+    
+      st.markdown('**Como usar a aplicação?**')
+      st.warning('Para iniciar, basta inserir sua Key do framework ChatPDF e o Documento que deseja extrair informações. Depois disso, é só perguntar para o chat')
+    
+    
+    st.subheader('Insira seu Documento e sua Key Para inicializar')
+    user_key = st.text_input('Digite sua key:', key='chave')
     uploaded_file = st.file_uploader('Envie um documento PDF:', type=['pdf'])
     
     USER = "user"
