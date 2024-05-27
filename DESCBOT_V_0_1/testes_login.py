@@ -196,9 +196,10 @@ def login():
             nome = st.text_input("Digite seu nome para registro: ", key='nome_registro')
             email_registro = st.text_input("Digite seu email para registro: ", key='email_registro')
             senha_registro = st.text_input("Digite sua senha para registro: ", type="password", key='senha_registro')
+            chat_pdf_api_key = st.text_input("Digite sua chave API do Chat PDF para registro: ", key='chat_pdf_api_key')
             
-            if nome and email_registro and senha_registro:
-                supabase_client.insere_dados(nome, email_registro, senha_registro)
+            if nome and email_registro and senha_registro and chat_pdf_api_key:
+                supabase_client.insere_dados(nome, email_registro, senha_registro, chat_pdf_api_key)
                 st.success("Usuário criado com sucesso! Por favor, autentique-se.")
             else:
                 st.warning("Por favor, preencha todos os campos para registro.")
