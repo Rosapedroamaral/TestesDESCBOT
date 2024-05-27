@@ -175,19 +175,19 @@ supabase_client = SupabaseClient(st.secrets["SUPABASE_URL"], st.secrets["SUPABAS
 
 
 def login():
-    with st.form(key='new_user_form'):
-        create_user_button = st.form_submit_button('Criar novo usuário')
-        if create_user_button:
-            nome = st.text_input("Digite seu nome para registro: ", key='nome_registro')
-            email_registro = st.text_input("Digite seu email para registro: ", key='email_registro')
-            senha_registro = st.text_input("Digite sua senha para registro: ", type="password", key='senha_registro')
-            chat_pdf_api_key = st.text_input("Digite sua chave API do Chat PDF para registro: ", key='chat_pdf_api_key')
-            
-            if nome and email_registro and senha_registro and chat_pdf_api_key:
-                supabase_client.insere_dados(nome, email_registro, senha_registro, chat_pdf_api_key)
-                st.success("Usuário criado com sucesso! Por favor, autentique-se.")
+    with st.form(key='user_form'):
+        email = st.text_input("Digite seu email: ")
+        senha = st.text_input("Digite sua senha: ", type="password")
+        
+        # Botão para autenticar usuário
+        submit_button = st.form_submit_button('Autenticar')
+        if submit_button:
+            if supabase_client.autentica_dados(email, senha):
+                st.success("Login bem-sucedido!")
+                return True
             else:
-                st.warning("Por favor, preencha todos os campos para registro.")
+                st.error("Email ou senha inválidos")
+                return False
 
     # Movendo a criação de novo usuário para fora do formulário de login
     with st.form(key='new_user_form'):
