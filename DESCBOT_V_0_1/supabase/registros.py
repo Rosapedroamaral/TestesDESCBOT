@@ -59,6 +59,9 @@ class SupabaseClient:
         print("Registro inserido com sucesso.")
         return True
 
+    # ... restante dos métodos da classe permanece inalterado ...
+
+
     def deleta_dados(self, email, senha):
         # Verificar se o email está cadastrado
         email_result = self.client.table("Registros").select("ID", "Senha").eq("Email", email).execute()
