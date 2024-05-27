@@ -36,25 +36,25 @@ class SupabaseClient:
             if len(n.data) == 0:
                 return api_key
 
-    def insere_dados(self, nome, email, senha, chat_pdf_api_key):
+    def insere_dados(self, nome, email, senha, api_key):
         # Verificar se o email já está cadastrado
         result = self.client.table("Registros").select("ID").eq("Email", email).execute()
         if len(result.data) > 0:
             print("Email já cadastrado")
             return
         
-        # Gerar um novo ID e APIKey únicos
+        # Gerar um novo ID único
         id = self.gera_id()
-        api_key = self.gera_api_key()
         
-        # Incluir a chave API do Chat PDF no registro
-        data = {"ID": id, "Nome": nome, "Email": email, "Senha": senha, "APIKey": api_key, "ChatPDFKey": chat_pdf_api_key}
+        # Incluir a chave API do usuário no registro
+        data = {"ID": id, "Nome": nome, "Email": email, "Senha": senha, "APIKey": api_key}
         self.client.table("Registros").insert(data).execute()
     
         # Inserir o ID na tabela Metricas
         self.metricas_client.insere_id(id)
     
         print("Registro inserido com sucesso.")
+
 
 
     def deleta_dados(self, email, senha):
@@ -197,10 +197,10 @@ def login():
             nome = st.text_input("Digite seu nome para registro: ", key='nome_registro')
             email_registro = st.text_input("Digite seu email para registro: ", key='email_registro')
             senha_registro = st.text_input("Digite sua senha para registro: ", type="password", key='senha_registro')
-            chat_pdf_api_key = st.text_input("Digite sua chave API do Chat PDF para registro: ", key='chat_pdf_api_key')
+            user_api_key = st.text_input("Digite sua chave API para registro: ", key='user_api_key')
             
-            if nome and email_registro and senha_registro and chat_pdf_api_key:
-                supabase_client.insere_dados(nome, email_registro, senha_registro, chat_pdf_api_key)
+            if nome and email_registro and senha_registro and user_api_key:
+                supabase_client.insere_dados(nome, email_registro, senha_registro, user_api_key)
                 st.success("Usuário criado com sucesso! Por favor, autentique-se.")
             else:
                 st.warning("Por favor, preencha todos os campos para registro.")
