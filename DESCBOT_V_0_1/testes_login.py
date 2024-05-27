@@ -191,7 +191,7 @@ def login():
             else:
                 st.error("Email ou senha inválidos")
                 return False, None
-
+                
     # Movendo a criação de novo usuário para fora do formulário de login
     with st.form(key='new_user_form'):
         create_user_button = st.form_submit_button('Criar novo usuário')
@@ -215,6 +215,11 @@ def login():
 # Page title
 st.set_page_config(page_title='ChatBot UERJ', page_icon='🤖')
 st.title('🤖 ChatBot UERJ')
+    
+login_sucesso, user_api_key = login()
+if login_sucesso:
+    # Se o login for bem-sucedido, use a chave API do usuário
+    user_key = user_api_key
 
 if login():
     with st.expander('Sobre essa aplicação'):
