@@ -25,27 +25,25 @@ class SupabaseClient:
             if len(n.data) == 0:
                 return id
           
-    def gera_api_key(self):
-        while True:
-            api_key_length = random.randint(5, 20)
-            characters = string.ascii_letters + string.digits
-            api_key = ''.join(random.choice(characters) for _ in range(api_key_length))
-            n = self.client.table("Registros").select("APIKey").eq("APIKey", api_key).execute()
-            if len(n.data) == 0:
-                return api_key
 
-    def insere_dados(self, nome, email, senha):
+    def insere_dados(self, nome, email, senha, chat_pdf_api_key):
         # Verificar se o email já está cadastrado
         result = self.client.table("Registros").select("ID").eq("Email", email).execute()
         if len(result.data) > 0:
             print("Email já cadastrado")
             return
         
-        # Gerar um novo ID e APIKey únicos
+        # Gerar um novo ID único
         id = self.gera_id()
-        api_key = self.gera_api_key()
-
-        data = {"ID": id, "Nome": nome, "Email": email, "Senha": senha, "APIKey": api_key}
+       
+        # Incluir a chave API do Chat PDF fornecida pelo usuário no registro
+        data = {
+            "ID": id,
+            "Nome": nome,
+            "Email": email,
+            "Senha": senha,
+            "APIKey": chat_pdf_api_key  # Usar a chave fornecida pelo usuário
+        }
         self.client.table("Registros").insert(data).execute()
 
         # Inserir o ID na tabela Metricas
