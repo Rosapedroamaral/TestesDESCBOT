@@ -179,7 +179,7 @@ supabase_client = SupabaseClient(st.secrets["SUPABASE_URL"], st.secrets["SUPABAS
 def login():
     sucesso = False
     api_key = None
-    with st.form(key='user_form'):
+    with st.form(key='user_login_form'):
         email = st.text_input("Digite seu email: ")
         senha = st.text_input("Digite sua senha: ", type="password")
         
@@ -193,6 +193,12 @@ def login():
                 st.error("Email ou senha inválidos")
                 
     return sucesso, api_key
+
+login_sucesso, user_api_key = login()
+if login_sucesso:
+    # Se o login for bem-sucedido, use a chave API do usuário
+    user_key = user_api_key
+    # Restante do seu código que depende do login bem-sucedido
                 
     # Movendo a criação de novo usuário para fora do formulário de login
     with st.form(key='new_user_form'):
