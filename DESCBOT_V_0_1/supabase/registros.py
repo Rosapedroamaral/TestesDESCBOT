@@ -31,7 +31,7 @@ class SupabaseClient:
         result = self.client.table("Registros").select("ID").eq("Email", email).execute()
         if len(result.data) > 0:
             print("Email já cadastrado")
-            return
+            return False
         
         # Gerar um novo ID único
         id = self.gera_id()
@@ -44,12 +44,20 @@ class SupabaseClient:
             "Senha": senha,
             "APIKey": chat_pdf_api_key  # Usar a chave fornecida pelo usuário
         }
-        self.client.table("Registros").insert(data).execute()
+        insert_response = self.client.table("Registros").insert(data).execute()
+
+        # Verificar se houve erro na inserção e informar ao usuário
+        if insert_response.error:
+            print("Erro ao inserir os dados: ", insert_response.error.message)
+            if 'APIKey' in insert_response.error.message:
+                print("A chave API fornecida é inválida ou já está em uso.")
+            return False
 
         # Inserir o ID na tabela Metricas
         self.metricas_client.insere_id(id)
 
         print("Registro inserido com sucesso.")
+        return True
 
     def deleta_dados(self, email, senha):
         # Verificar se o email está cadastrado
