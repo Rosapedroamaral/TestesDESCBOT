@@ -16,8 +16,8 @@ supabase = init_connection()
 class SupabaseClient:
     def __init__(self, url, api_key):
         self.url = url
-        self.api_key = key
-        self.client = create_client(url, key)
+        self.api_key = api_key
+        self.client = create_client(url, api_key)
         self.metricas_client = MetricasClient(self)
 
     def gera_id(self):
