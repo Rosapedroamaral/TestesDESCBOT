@@ -2,7 +2,6 @@ import os
 import random
 import string
 from supabase import create_client, Client
-from dotenv import load_dotenv
 from metricas import MetricasClient
 from source.modules.chat_pdf import ChatPDFAPI
 import streamlit as st
