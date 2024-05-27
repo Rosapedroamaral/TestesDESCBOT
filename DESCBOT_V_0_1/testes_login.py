@@ -46,7 +46,17 @@ class SupabaseClient:
         # Gerar um novo ID e APIKey únicos
         id = self.gera_id()
         api_key = self.gera_api_key()
-
+       
+        #last add
+        if create_user_button:
+            nome = st.text_input("Digite seu nome para registro: ", key='nome_registro')
+            email_registro = st.text_input("Digite seu email para registro: ", key='email_registro')
+            senha_registro = st.text_input("Digite sua senha para registro: ", type="password", key='senha_registro')
+            # chat_pdf_api_key = st.text_input("Digite sua chave API do Chat PDF para registro: ", key='chat_pdf_api_key')
+        
+            if nome and email_registro and senha_registro:
+                supabase_client.insere_dados(nome, email_registro, senha_registro)
+                
         # Incluir a chave API do Chat PDF no registro
         data = {"ID": id, "Nome": nome, "Email": email, "Senha": senha, "APIKey": api_key, "ChatPDFKey": chat_pdf_api_key}
         self.client.table("Registros").insert(data).execute()
