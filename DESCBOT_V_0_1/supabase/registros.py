@@ -42,25 +42,22 @@ class SupabaseClient:
             "Nome": nome,
             "Email": email,
             "Senha": senha,
-            "APIKey": chat_pdf_api_key  # Usar a chave fornecida pelo usuário
+            "APIKey": chat_pdf_api_key  # Certifique-se de que 'APIKey' é o nome correto da coluna
         }
         insert_response = self.client.table("Registros").insert(data).execute()
-
+    
         # Verificar se houve erro na inserção e informar ao usuário
         if insert_response.error:
             print("Erro ao inserir os dados: ", insert_response.error.message)
             if 'APIKey' in insert_response.error.message:
                 print("A chave API fornecida é inválida ou já está em uso.")
             return False
-
+    
         # Inserir o ID na tabela Metricas
         self.metricas_client.insere_id(id)
-
+    
         print("Registro inserido com sucesso.")
         return True
-
-    # ... restante dos métodos da classe permanece inalterado ...
-
 
     def deleta_dados(self, email, senha):
         # Verificar se o email está cadastrado
