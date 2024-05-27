@@ -109,7 +109,7 @@ class SupabaseClient:
 
     def autentica_dados(self, email, senha):
         # Verificar se o email está cadastrado
-        result = self.client.table("Registros").select("ID", "Senha", "ChatPDFKey").eq("Email", email).execute()
+        result = self.client.table("Registros").select("ID", "Senha", "APIKey").eq("Email", email).execute()
         if len(result.data) == 0:
             print("Usuário não cadastrado")
             return False, None
@@ -122,9 +122,10 @@ class SupabaseClient:
         
         # Atualizar a tabela Metricas
         self.metricas_client.atualizar_acessos(record["ID"])
-
+    
         print("Acesso liberado")
-        return True, record["ChatPDFKey"]
+        return True, record["APIKey"]
+
 
 
 def menu_principal():
