@@ -7,9 +7,12 @@ from metricas import MetricasClient
 from source.modules.chat_pdf import ChatPDFAPI
 import streamlit as st
 
-url: str = os.environ.get("SUPABASE_URL")
-key: str = os.environ.get("SUPABASE_KEY")
-supabase: Client = create_client(url, key)
+def init_connection():
+    url = st.secrets["SUPABASE_URL"]
+    key = st.secrets["SUPABASE_KEY"]
+    return create_client(url, key)
+
+supabase = init_connection()
 
 class SupabaseClient:
     def __init__(self, url, api_key):
