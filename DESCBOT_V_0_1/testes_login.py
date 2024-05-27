@@ -184,7 +184,8 @@ def login():
         # Botão para autenticar usuário
         submit_button = st.form_submit_button('Autenticar')
         if submit_button:
-            if supabase_client.autentica_dados(email, senha):
+            success, _ = supabase_client.autentica_dados(email, senha)
+            if success:
                 st.success("Login bem-sucedido!")
                 return True
             else:
