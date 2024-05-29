@@ -37,24 +37,36 @@ class SupabaseClient:
                 return api_key
 
     def insere_dados(self, nome, email, senha, api_key):
-        # Verificar se o email já está cadastrado
         result = self.client.table("Registros").select("ID").eq("Email", email).execute()
         if len(result.data) > 0:
             print("Email já cadastrado")
-            return
+            return False
         
         # Gerar um novo ID único
         id = self.gera_id()
-        
-        # Incluir a chave API do usuário no registro
-        data = {"ID": id, "Nome": nome, "Email": email, "Senha": senha, "APIKey": api_key}
-        self.client.table("Registros").insert(data).execute()
+       
+        # Incluir a chave API do Chat PDF fornecida pelo usuário no registro
+        data = {
+            "ID": id,
+            "Nome": nome,
+            "Email": email,
+            "Senha": senha,
+            "APIKey": chat_pdf_api_key  # Certifique-se de que 'APIKey' é o nome correto da coluna
+        }
+        insert_response = self.client.table("Registros").insert(data).execute()
+    
+        # Verificar se houve erro na inserção e informar ao usuário
+        if insert_response.error:
+            print("Erro ao inserir os dados: ", insert_response.error.message)
+            if 'APIKey' in insert_response.error.message:
+                print("A chave API fornecida é inválida ou já está em uso.")
+            return False
     
         # Inserir o ID na tabela Metricas
         self.metricas_client.insere_id(id)
     
         print("Registro inserido com sucesso.")
-
+        return True
 
 
     def deleta_dados(self, email, senha):
@@ -202,8 +214,11 @@ def login():
             user_api_key = st.text_input("Digite sua chave API para registro: ", key='user_api_key')
             
             if nome and email_registro and senha_registro and user_api_key:
-                supabase_client.insere_dados(nome, email_registro, senha_registro, user_api_key)
-                st.success("Usuário criado com sucesso! Por favor, autentique-se.")
+                result = supabase_client.insere_dados(nome, email_registro, senha_registro, user_api_key)
+                if result:
+                    st.success("Usuário criado com sucesso! Por favor, autentique-se.")
+                else:
+                    st.error("E-mail já cadastrado")
             else:
                 st.warning("Por favor, preencha todos os campos para registro.")
 
