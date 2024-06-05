@@ -189,17 +189,9 @@ supabase_client = SupabaseClient(st.secrets["SUPABASE_URL"], st.secrets["SUPABAS
 def login():
     # Verifica se o usuário já está autenticado
     if 'autenticado' in st.session_state and st.session_state['autenticado']:
-        # Busca a chave API do usuário autenticado
-        email = st.session_state['email_autenticado']
-        senha = st.session_state['senha_autenticada']
-        success, api_key = supabase_client.autentica_dados(email, senha)
-        if success:
-            # Passa a chave API como valor padrão para o campo de texto
-            user_key = st.text_input('Digite sua key:', value=api_key, key='chave')
-            return True
-        else:
-            st.error("Não foi possível recuperar a chave API")
-            return False
+        # Usa a chave API armazenada no estado da sessão
+        user_key = st.session_state['api_key']
+        return True
     else:
         with st.form(key='user_form'):
             email = st.text_input("Digite seu email: ")
@@ -211,11 +203,8 @@ def login():
                 success, api_key = supabase_client.autentica_dados(email, senha)
                 if success:
                     st.success("Login bem-sucedido!")
-                    st.session_state['autenticado'] = True  # Define a sessão como autenticada
-                    st.session_state['email_autenticado'] = email
-                    st.session_state['senha_autenticada'] = senha
-                    # Passa a chave API como valor padrão para o campo de texto
-                    user_key = st.text_input('Digite sua key:', value=api_key, key='chave')
+                    st.session_state['autenticado'] = True
+                    st.session_state['api_key'] = api_key  # Armazena a chave API no estado da sessão
                     return True
                 else:
                     st.error("Email ou senha inválidos")
@@ -260,7 +249,9 @@ if login():
     
     
     st.subheader('Insira seu Documento e sua Key Para inicializar')
-    user_key = st.text_input('Digite sua key:', key='chave')
+    if 'autenticado' in st.session_state and st.session_state['autenticado']:
+        # Usa a chave API armazenada no estado da sessão como valor padrão
+        user_key = st.text_input('Digite sua key:', value=st.session_state['api_key'], key='unique_key_for_api_key')
     uploaded_file = st.file_uploader('Envie um documento PDF:', type=['pdf'])
     
     USER = "user"
