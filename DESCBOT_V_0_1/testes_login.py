@@ -194,11 +194,9 @@ def login():
         # Botão para autenticar usuário
         submit_button = st.form_submit_button('Autenticar')
         if submit_button:
-            success, api_key = supabase_client.autentica_dados(email, senha)
+            success, _ = supabase_client.autentica_dados(email, senha)
             if success:
                 st.success("Login bem-sucedido!")
-                # Use a chave API como valor padrão no campo de entrada
-                user_key = st.text_input('Digite sua key:', value=api_key, key='chave')
                 return True
             else:
                 st.error("Email ou senha inválidos")
@@ -240,10 +238,8 @@ if login():
       st.warning('Para iniciar, basta inserir sua Key do framework ChatPDF e o Documento que deseja extrair informações. Depois disso, é só perguntar para o chat')
     
     
-    if 'user_key' not in st.session_state:
-        st.session_state['user_key'] = ''
-    
-    user_key = st.text_input('Digite sua key:', value=st.session_state['user_key'], key='unique_key_for_user_key')
+    st.subheader('Insira seu Documento e sua Key Para inicializar')
+    user_key = st.text_input('Digite sua key:', key='chave')
     uploaded_file = st.file_uploader('Envie um documento PDF:', type=['pdf'])
     
     USER = "user"
@@ -272,7 +268,6 @@ if login():
             response = f"{resposta}"
             st.session_state[MESSAGES].append({'role': ASSISTANT,'content':resposta})
             st.chat_message(ASSISTANT).write(response) 
-
 
 
 
