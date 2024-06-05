@@ -233,44 +233,50 @@ def login():
                 st.warning("Por favor, preencha todos os campos para registro.")
 
 def trocar_senha():
-    # Verifica se a APIKey já foi verificada
+    # Inicializa a variável de estado para verificar se a APIKey foi validada
     if 'api_key_verified' not in st.session_state:
         st.session_state['api_key_verified'] = False
+        st.session_state['user_id'] = None
 
+    # Cria o formulário para verificar a APIKey
     with st.form(key='change_password_form'):
         st.write("Trocar senha")
         api_key_input = st.text_input("Digite sua APIKey para verificar sua identidade:", type="password", key='api_key')
-        submit_button = st.form_submit_button('Verificar APIKey e trocar senha')
-        
-        if submit_button:
-            # Verifica se a APIKey está correta
-            result = supabase_client.client.table("Registros").select("ID", "Senha").eq("APIKey", api_key_input).execute()
-            if len(result.data) == 0:
-                st.error("APIKey inválida")
-                st.session_state['api_key_verified'] = False
-            else:
-                st.session_state['api_key_verified'] = True
-                st.success("APIKey verificada com sucesso!")
+        submit_button = st.form_submit_button('Verificar APIKey')
 
-    # Se a APIKey foi verificada, pede a nova senha
+    # Verifica se a APIKey está correta
+    if submit_button:
+        result = supabase_client.client.table("Registros").select("ID").eq("APIKey", api_key_input).execute()
+        if len(result.data) == 0:
+            st.error("APIKey inválida")
+            st.session_state['api_key_verified'] = False
+        else:
+            st.success("APIKey verificada com sucesso!")
+            st.session_state['api_key_verified'] = True
+            st.session_state['user_id'] = result.data[0]["ID"]
+
+    # Se a APIKey foi verificada, cria um novo formulário para trocar a senha
     if st.session_state['api_key_verified']:
-        nova_senha = st.text_input("Digite sua nova senha:", type="password", key='new_password')
-        confirm_nova_senha = st.text_input("Confirme sua nova senha:", type="password", key='confirm_new_password')
-        
-        if nova_senha and confirm_nova_senha:
+        with st.form(key='new_password_form'):
+            nova_senha = st.text_input("Digite sua nova senha:", type="password", key='new_password')
+            confirm_nova_senha = st.text_input("Confirme sua nova senha:", type="password", key='confirm_new_password')
+            change_password_button = st.form_submit_button('Trocar senha')
+
+        # Se o botão de trocar senha for pressionado, verifica se as senhas coincidem e atualiza no banco de dados
+        if change_password_button:
             if nova_senha == confirm_nova_senha:
-                # Atualiza a senha no banco de dados
-                record_id = result.data[0]["ID"]
                 update_data = {"Senha": nova_senha}
-                update_result = supabase_client.client.table("Registros").update(update_data).eq("ID", record_id).execute()
+                update_result = supabase_client.client.table("Registros").update(update_data).eq("ID", st.session_state['user_id']).execute()
                 if update_result.status_code == 200:
                     st.success("Senha atualizada com sucesso!")
+                    # Reseta o estado para permitir uma nova verificação no futuro
+                    st.session_state['api_key_verified'] = False
+                    st.session_state['user_id'] = None
                 else:
                     st.error("Erro ao atualizar a senha.")
             else:
                 st.error("As senhas não coincidem.")
-        else:
-            st.warning("Por favor, preencha todos os campos para trocar a senha.")
+
 
  
 
