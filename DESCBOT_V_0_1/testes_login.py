@@ -191,21 +191,32 @@ def login():
     if 'autenticado' in st.session_state and st.session_state['autenticado']:
         return True
     
-    with st.form(key='user_form'):
-        email = st.text_input("Digite seu email: ")
-        senha = st.text_input("Digite sua senha: ", type="password")
-        
-        # Botão para autenticar usuário
-        submit_button = st.form_submit_button('Autenticar')
-        if submit_button:
-            success, _ = supabase_client.autentica_dados(email, senha)
-            if success:
-                st.success("Login bem-sucedido!")
-                st.session_state['autenticado'] = True  # Define a sessão como autenticada
-                return True
-            else:
-                st.error("Email ou senha inválidos")
-                return False
+    col1, col2 = st.columns(2)
+    with col1:
+        with st.form(key='user_form'):
+            email = st.text_input("Digite seu email: ")
+            senha = st.text_input("Digite sua senha: ", type="password")
+            
+            # Botão para autenticar usuário
+            submit_button = st.form_submit_button('Autenticar')
+            if submit_button:
+                success, _ = supabase_client.autentica_dados(email, senha)
+                if success:
+                    st.success("Login bem-sucedido!")
+                    st.session_state['autenticado'] = True  # Define a sessão como autenticada
+                    return True
+                else:
+                    st.error("Email ou senha inválidos")
+                    return False
+
+    with col2:
+        # Botão para trocar senha
+        change_password_button = st.button('Trocar senha')
+        if change_password_button:
+            trocar_senha()
+
+    # Restante do código da função login...
+
     # Movendo a criação de novo usuário para fora do formulário de login
     with st.form(key='new_user_form'):
         create_user_button = st.form_submit_button('Criar novo usuário')
@@ -224,8 +235,42 @@ def login():
             else:
                 st.warning("Por favor, preencha todos os campos para registro.")
 
-
-
+def trocar_senha():
+    with st.form(key='change_password_form'):
+        st.write("Trocar senha")
+        api_key_input = st.text_input("Digite sua APIKey para verificar sua identidade:", type="password", key='api_key')
+        submit_button = st.form_submit_button('Verificar APIKey e trocar senha')
+        
+        if submit_button:
+            # Verifica se a APIKey está correta
+            result = supabase_client.client.table("Registros").select("ID", "Senha").eq("APIKey", api_key_input).execute()
+            if len(result.data) == 0:
+                st.error("APIKey inválida")
+                return False
+            else:
+                # Se a APIKey estiver correta, pede a nova senha
+                nova_senha = st.text_input("Digite sua nova senha:", type="password", key='new_password')
+                confirm_nova_senha = st.text_input("Confirme sua nova senha:", type="password", key='confirm_new_password')
+                
+                if nova_senha and confirm_nova_senha:
+                    if nova_senha == confirm_nova_senha:
+                        # Atualiza a senha no banco de dados
+                        record_id = result.data[0]["ID"]
+                        update_data = {"Senha": nova_senha}
+                        update_result = supabase_client.client.table("Registros").update(update_data).eq("ID", record_id).execute()
+                        if update_result.status_code == 200:
+                            st.success("Senha atualizada com sucesso!")
+                            return True
+                        else:
+                            st.error("Erro ao atualizar a senha.")
+                            return False
+                    else:
+                        st.error("As senhas não coincidem.")
+                        return False
+                else:
+                    st.warning("Por favor, preencha todos os campos para trocar a senha.")
+                    return False
+ 
 
 
 
