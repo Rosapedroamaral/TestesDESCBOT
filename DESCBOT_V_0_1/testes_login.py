@@ -244,8 +244,7 @@ if login():
     
     
     st.subheader('Insira seu Documento e sua Key Para inicializar')
-    if st.session_state['autenticado']:
-        user_key = st.session_state['api_key']
+    user_key = st.session_state['api_key']
     uploaded_file = st.file_uploader('Envie um documento PDF:', type=['pdf'])
     
     USER = "user"
