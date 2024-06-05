@@ -208,11 +208,11 @@ def login():
                 st.error("Email ou senha inválidos")
                 return False
 
-    change_password_button = st.button('Trocar senha')
-    if change_password_button:
-        trocar_senha()
+        change_password_button = st.button('Trocar senha')
+        if change_password_button:
+            trocar_senha()
 
-    # Restante do código da função login...
+
 
     # Movendo a criação de novo usuário para fora do formulário de login
     with st.form(key='new_user_form'):
