@@ -187,20 +187,23 @@ supabase_client = SupabaseClient(st.secrets["SUPABASE_URL"], st.secrets["SUPABAS
 
 
 def login():
+    # Verifica se o usuário já está autenticado
+    if 'autenticado' in st.session_state and st.session_state['autenticado']:
+        return True
+    
     with st.form(key='user_form'):
         email = st.text_input("Digite seu email: ")
         senha = st.text_input("Digite sua senha: ", type="password")
+        
+        # Botão para autenticar usuário
         submit_button = st.form_submit_button('Autenticar')
         if submit_button:
-            success, api_key = supabase_client.autentica_dados(email, senha)
+            success, _ = supabase_client.autentica_dados(email, senha)
             if success:
-                st.session_state['autenticado'] = True
-                st.session_state['api_key'] = api_key
                 st.success("Login bem-sucedido!")
+                st.session_state['autenticado'] = True  # Define a sessão como autenticada
                 return True
             else:
-                st.session_state['autenticado'] = False
-                st.session_state['api_key'] = ''
                 st.error("Email ou senha inválidos")
                 return False
     # Movendo a criação de novo usuário para fora do formulário de login
@@ -232,8 +235,6 @@ st.title('🤖 ChatBot UERJ')
 
 if 'autenticado' not in st.session_state:
     st.session_state['autenticado'] = False  # Inicializa a sessão como não autenticada
-if 'api_key' not in st.session_state:
-    st.session_state['api_key'] = ''  # Inicializa a API key como vazia
 if login():
     with st.expander('Sobre essa aplicação'):
       st.markdown('*O que essa aplicação pode fazer?*')
@@ -244,36 +245,35 @@ if login():
     
     
     st.subheader('Insira seu Documento e sua Key Para inicializar')
-    user_key = st.session_state['api_key']
+    user_key = st.text_input('Digite sua key:', key='chave')
     uploaded_file = st.file_uploader('Envie um documento PDF:', type=['pdf'])
-    if uploaded_file is not None and st.session_state['autenticado']:
-        
-        USER = "user"
-        ASSISTANT = "assistant"
-        MESSAGES = "messages"
-        if (uploaded_file is not None) and (len(user_key)>0):
-            if (MESSAGES not in st.session_state):
-                file_contents = uploaded_file.read()
-                chat1 = ChatPDFAPI(api_key=user_key,file_content=file_contents)
-                st.session_state['CHAT']=chat1
-                bemvindo="Olá !!! O que deseja saber sobre esse Documento?"
-                st.session_state[MESSAGES] =  [{'role': ASSISTANT,'content':bemvindo}]
-        
-            for msg in st.session_state[MESSAGES]:
-                st.chat_message(msg.get('role')).write(msg.get('content'))
-        
-            prompt: str = st.chat_input("Escreva sua dúvida aqui:")
-        
-            if prompt and uploaded_file is not None and len(user_key)>0:
-                st.session_state[MESSAGES].append({'role': USER,'content':prompt})
-                st.chat_message(USER).write(prompt)
-                request=st.session_state[MESSAGES]
-                if len(st.session_state[MESSAGES])>6:
-                    request= st.session_state[MESSAGES][-6:]
-                resposta = st.session_state['CHAT'].pergunta_pdf_with_context(request)
-                response = f"{resposta}"
-                st.session_state[MESSAGES].append({'role': ASSISTANT,'content':resposta})
-                st.chat_message(ASSISTANT).write(response) 
+    
+    USER = "user"
+    ASSISTANT = "assistant"
+    MESSAGES = "messages"
+    if (uploaded_file is not None) and (len(user_key)>0):
+        if (MESSAGES not in st.session_state):
+            file_contents = uploaded_file.read()
+            chat1 = ChatPDFAPI(api_key=user_key,file_content=file_contents)
+            st.session_state['CHAT']=chat1
+            bemvindo="Olá !!! O que deseja saber sobre esse Documento?"
+            st.session_state[MESSAGES] =  [{'role': ASSISTANT,'content':bemvindo}]
+    
+        for msg in st.session_state[MESSAGES]:
+            st.chat_message(msg.get('role')).write(msg.get('content'))
+    
+        prompt: str = st.chat_input("Escreva sua dúvida aqui:")
+    
+        if prompt and uploaded_file is not None and len(user_key)>0:
+            st.session_state[MESSAGES].append({'role': USER,'content':prompt})
+            st.chat_message(USER).write(prompt)
+            request=st.session_state[MESSAGES]
+            if len(st.session_state[MESSAGES])>6:
+                request= st.session_state[MESSAGES][-6:]
+            resposta = st.session_state['CHAT'].pergunta_pdf_with_context(request)
+            response = f"{resposta}"
+            st.session_state[MESSAGES].append({'role': ASSISTANT,'content':resposta})
+            st.chat_message(ASSISTANT).write(response) 
 
 
 
