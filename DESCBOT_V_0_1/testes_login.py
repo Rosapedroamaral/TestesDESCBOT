@@ -189,27 +189,23 @@ supabase_client = SupabaseClient(st.secrets["SUPABASE_URL"], st.secrets["SUPABAS
 def login():
     # Verifica se o usuário já está autenticado
     if 'autenticado' in st.session_state and st.session_state['autenticado']:
-        # Usa a chave API armazenada no estado da sessão
-        user_key = st.session_state['api_key']
         return True
-    else:
-        with st.form(key='user_form'):
-            email = st.text_input("Digite seu email: ")
-            senha = st.text_input("Digite sua senha: ", type="password")
-            
-            # Botão para autenticar usuário
-            submit_button = st.form_submit_button('Autenticar')
-            if submit_button:
-                success, api_key = supabase_client.autentica_dados(email, senha)
-                if success:
-                    st.success("Login bem-sucedido!")
-                    st.session_state['autenticado'] = True
-                    st.session_state['api_key'] = api_key  # Armazena a chave API no estado da sessão
-                    return True
-                else:
-                    st.error("Email ou senha inválidos")
-                    return False
-
+    
+    with st.form(key='user_form'):
+        email = st.text_input("Digite seu email: ")
+        senha = st.text_input("Digite sua senha: ", type="password")
+        
+        # Botão para autenticar usuário
+        submit_button = st.form_submit_button('Autenticar')
+        if submit_button:
+            success, _ = supabase_client.autentica_dados(email, senha)
+            if success:
+                st.success("Login bem-sucedido!")
+                st.session_state['autenticado'] = True  # Define a sessão como autenticada
+                return True
+            else:
+                st.error("Email ou senha inválidos")
+                return False
     # Movendo a criação de novo usuário para fora do formulário de login
     with st.form(key='new_user_form'):
         create_user_button = st.form_submit_button('Criar novo usuário')
@@ -249,9 +245,7 @@ if login():
     
     
     st.subheader('Insira seu Documento e sua Key Para inicializar')
-    if 'autenticado' in st.session_state and st.session_state['autenticado']:
-        # Usa a chave API armazenada no estado da sessão como valor padrão
-        user_key = st.text_input('Digite sua key:', value=st.session_state['api_key'], key='unique_key_for_api_key')
+    user_key = st.text_input('Digite sua key:', key='chave')
     uploaded_file = st.file_uploader('Envie um documento PDF:', type=['pdf'])
     
     USER = "user"
@@ -279,7 +273,7 @@ if login():
             resposta = st.session_state['CHAT'].pergunta_pdf_with_context(request)
             response = f"{resposta}"
             st.session_state[MESSAGES].append({'role': ASSISTANT,'content':resposta})
-            st.chat_message(ASSISTANT).write(response) 
+            st.chat_message(ASSISTANT).write(response)
 
 
 
