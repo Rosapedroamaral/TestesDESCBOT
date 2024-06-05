@@ -194,9 +194,11 @@ def login():
         # Botão para autenticar usuário
         submit_button = st.form_submit_button('Autenticar')
         if submit_button:
-            success, _ = supabase_client.autentica_dados(email, senha)
+            success, api_key = supabase_client.autentica_dados(email, senha)
             if success:
                 st.success("Login bem-sucedido!")
+                # Use a chave API como valor padrão no campo de entrada
+                user_key = st.text_input('Digite sua key:', value=api_key, key='chave')
                 return True
             else:
                 st.error("Email ou senha inválidos")
