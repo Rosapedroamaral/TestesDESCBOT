@@ -36,7 +36,7 @@ class SupabaseClient:
             if len(n.data) == 0:
                 return api_key
 
-    def insere_dados(self, nome, email, senha, api_key):
+    def insere_dados(self, nome, email, senha, chat_pdf_api_key):
         result = self.client.table("Registros").select("ID").eq("Email", email).execute()
         if len(result.data) > 0:
             print("Email já cadastrado")
@@ -51,7 +51,7 @@ class SupabaseClient:
             "Nome": nome,
             "Email": email,
             "Senha": senha,
-            "APIKey": api_key # Certifique-se de que 'APIKey' é o nome correto da coluna
+            "APIKey": chat_pdf_api_key # Certifique-se de que 'APIKey' é o nome correto da coluna
         }
         insert_response = self.client.table("Registros").insert(data).execute()
     
