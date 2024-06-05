@@ -187,6 +187,10 @@ supabase_client = SupabaseClient(st.secrets["SUPABASE_URL"], st.secrets["SUPABAS
 
 
 def login():
+    # Verifica se o usuário já está autenticado
+    if 'autenticado' in st.session_state and st.session_state['autenticado']:
+        return True
+    
     with st.form(key='user_form'):
         email = st.text_input("Digite seu email: ")
         senha = st.text_input("Digite sua senha: ", type="password")
@@ -197,11 +201,11 @@ def login():
             success, _ = supabase_client.autentica_dados(email, senha)
             if success:
                 st.success("Login bem-sucedido!")
+                st.session_state['autenticado'] = True  # Define a sessão como autenticada
                 return True
             else:
                 st.error("Email ou senha inválidos")
                 return False
-
     # Movendo a criação de novo usuário para fora do formulário de login
     with st.form(key='new_user_form'):
         create_user_button = st.form_submit_button('Criar novo usuário')
@@ -229,6 +233,8 @@ def login():
 st.set_page_config(page_title='ChatBot UERJ', page_icon='🤖')
 st.title('🤖 ChatBot UERJ')
 
+if 'autenticado' not in st.session_state:
+    st.session_state['autenticado'] = False  # Inicializa a sessão como não autenticada
 if login():
     with st.expander('Sobre essa aplicação'):
       st.markdown('*O que essa aplicação pode fazer?*')
