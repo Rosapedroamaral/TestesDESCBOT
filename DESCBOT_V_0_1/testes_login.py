@@ -51,7 +51,7 @@ class SupabaseClient:
             "Nome": nome,
             "Email": email,
             "Senha": senha,
-            "APIKey": chat_pdf_api_key  # Certifique-se de que 'APIKey' é o nome correto da coluna
+            "APIKey": api_key # Certifique-se de que 'APIKey' é o nome correto da coluna
         }
         insert_response = self.client.table("Registros").insert(data).execute()
     
