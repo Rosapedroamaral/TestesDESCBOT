@@ -235,20 +235,18 @@ if 'autenticado' not in st.session_state:
 if 'api_key' not in st.session_state:
     st.session_state['api_key'] = ''  # Inicializa a API key como vazia
 if login():
+    with st.expander('Sobre essa aplicação'):
+      st.markdown('*O que essa aplicação pode fazer?*')
+      st.info('Este projeto foi desenvolvido para facilitar a extração de informações e interações com documentos PDF por meio de uma interface de chat. Utilizando a biblioteca ChatPDF, é possível realizar operações como leitura de texto, busca por palavras-chave, marcação de trechos relevantes e muito mais, tudo de forma automatizada e intuitiva.')
+    
+      st.markdown('**Como usar a aplicação?**')
+      st.warning('Para iniciar, basta inserir sua Key do framework ChatPDF e o Documento que deseja extrair informações. Depois disso, é só perguntar para o chat')
+    
+    
+    st.subheader('Insira seu Documento e sua Key Para inicializar')
     user_key = st.session_state['api_key']
     uploaded_file = st.file_uploader('Envie um documento PDF:', type=['pdf'])
     if uploaded_file is not None and st.session_state['autenticado']:
-        with st.expander('Sobre essa aplicação'):
-          st.markdown('*O que essa aplicação pode fazer?*')
-          st.info('Este projeto foi desenvolvido para facilitar a extração de informações e interações com documentos PDF por meio de uma interface de chat. Utilizando a biblioteca ChatPDF, é possível realizar operações como leitura de texto, busca por palavras-chave, marcação de trechos relevantes e muito mais, tudo de forma automatizada e intuitiva.')
-        
-          st.markdown('**Como usar a aplicação?**')
-          st.warning('Para iniciar, basta inserir sua Key do framework ChatPDF e o Documento que deseja extrair informações. Depois disso, é só perguntar para o chat')
-        
-        
-        st.subheader('Insira seu Documento e sua Key Para inicializar')
-        user_key = st.session_state['api_key']
-        uploaded_file = st.file_uploader('Envie um documento PDF:', type=['pdf'])
         
         USER = "user"
         ASSISTANT = "assistant"
