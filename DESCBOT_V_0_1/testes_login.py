@@ -240,8 +240,10 @@ if login():
       st.warning('Para iniciar, basta inserir sua Key do framework ChatPDF e o Documento que deseja extrair informações. Depois disso, é só perguntar para o chat')
     
     
-    st.subheader('Insira seu Documento e sua Key Para inicializar')
-    user_key = st.text_input('Digite sua key:', key='chave')
+    if 'user_key' not in st.session_state:
+        st.session_state['user_key'] = ''
+    
+    user_key = st.text_input('Digite sua key:', value=st.session_state['user_key'], key='unique_key_for_user_key')
     uploaded_file = st.file_uploader('Envie um documento PDF:', type=['pdf'])
     
     USER = "user"
