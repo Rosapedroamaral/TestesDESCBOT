@@ -254,7 +254,7 @@ def trocar_senha():
                 st.success("APIKey verificada com sucesso!")
                 st.session_state['api_key_verified'] = True
                 st.session_state['user_id'] = result.data[0]["ID"]
-                st.stop()  # Interrompe a execução do script aqui
+                # Não use st.stop() aqui para evitar a reinicialização do script
 
     # Se a APIKey foi verificada, cria um novo formulário para trocar a senha
     if st.session_state['api_key_verified']:
@@ -272,11 +272,12 @@ def trocar_senha():
                     st.success("Senha atualizada com sucesso!")
                     st.session_state['api_key_verified'] = False
                     st.session_state['user_id'] = None
-                    st.stop()  # Interrompe a execução do script aqui
+                    # Não use st.stop() aqui para evitar a reinicialização do script
                 else:
                     st.error("Erro ao atualizar a senha.")
             else:
                 st.error("As senhas não coincidem.")
+
 
 
 
