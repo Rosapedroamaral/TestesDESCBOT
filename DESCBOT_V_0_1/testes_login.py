@@ -189,23 +189,38 @@ supabase_client = SupabaseClient(st.secrets["SUPABASE_URL"], st.secrets["SUPABAS
 def login():
     # Verifica se o usuário já está autenticado
     if 'autenticado' in st.session_state and st.session_state['autenticado']:
-        return True
-    
-    with st.form(key='user_form'):
-        email = st.text_input("Digite seu email: ")
-        senha = st.text_input("Digite sua senha: ", type="password")
-        
-        # Botão para autenticar usuário
-        submit_button = st.form_submit_button('Autenticar')
-        if submit_button:
-            success, _ = supabase_client.autentica_dados(email, senha)
-            if success:
-                st.success("Login bem-sucedido!")
-                st.session_state['autenticado'] = True  # Define a sessão como autenticada
-                return True
-            else:
-                st.error("Email ou senha inválidos")
-                return False
+        # Busca a chave API do usuário autenticado
+        email = st.session_state['email_autenticado']
+        senha = st.session_state['senha_autenticada']
+        success, api_key = supabase_client.autentica_dados(email, senha)
+        if success:
+            # Passa a chave API como valor padrão para o campo de texto
+            user_key = st.text_input('Digite sua key:', value=api_key, key='chave')
+            return True
+        else:
+            st.error("Não foi possível recuperar a chave API")
+            return False
+    else:
+        with st.form(key='user_form'):
+            email = st.text_input("Digite seu email: ")
+            senha = st.text_input("Digite sua senha: ", type="password")
+            
+            # Botão para autenticar usuário
+            submit_button = st.form_submit_button('Autenticar')
+            if submit_button:
+                success, api_key = supabase_client.autentica_dados(email, senha)
+                if success:
+                    st.success("Login bem-sucedido!")
+                    st.session_state['autenticado'] = True  # Define a sessão como autenticada
+                    st.session_state['email_autenticado'] = email
+                    st.session_state['senha_autenticada'] = senha
+                    # Passa a chave API como valor padrão para o campo de texto
+                    user_key = st.text_input('Digite sua key:', value=api_key, key='chave')
+                    return True
+                else:
+                    st.error("Email ou senha inválidos")
+                    return False
+
     # Movendo a criação de novo usuário para fora do formulário de login
     with st.form(key='new_user_form'):
         create_user_button = st.form_submit_button('Criar novo usuário')
