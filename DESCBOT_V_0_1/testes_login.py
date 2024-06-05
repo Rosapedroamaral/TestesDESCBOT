@@ -37,32 +37,29 @@ class SupabaseClient:
                 return api_key
 
     def insere_dados(self, nome, email, senha, chat_pdf_api_key):
-        result = self.client.table("Registros").select("ID").eq("Email", email).execute()
-        if len(result.data) > 0:
-            print("Email já cadastrado")
+        try:
+            result = self.client.table("Registros").select("ID").eq("Email", email).execute()
+            if len(result.data) > 0:
+                print("Email já cadastrado")
+                return False
+            
+            id = self.gera_id()
+           
+            data = {
+                "ID": id,
+                "Nome": nome,
+                "Email": email,
+                "Senha": senha,
+                "APIKey": chat_pdf_api_key
+            }
+            insert_response = self.client.table("Registros").insert(data).execute()
+            self.metricas_client.insere_id(id)
+            print("Registro inserido com sucesso.")
+            return True
+        except Exception as e:
+            print(f"Erro ao inserir os dados: {e}")
             return False
-        
-        # Gerar um novo ID único
-        id = self.gera_id()
-       
-        # Incluir a chave API do Chat PDF fornecida pelo usuário no registro
-        data = {
-            "ID": id,
-            "Nome": nome,
-            "Email": email,
-            "Senha": senha,
-            "APIKey": chat_pdf_api_key # Certifique-se de que 'APIKey' é o nome correto da coluna
-        }
-        insert_response = self.client.table("Registros").insert(data).execute()
-    
-        # Verificar se houve erro na inserção e informar ao usuário
-        if insert_response.status_code != 200:
-            print("Erro ao inserir os dados: ", insert_response)
-            return False
-            if 'APIKey' in insert_response.error.message:
-                print("A chave API fornecida é inválida ou já está em uso.")
-            return False
-    
+
         # Inserir o ID na tabela Metricas
         self.metricas_client.insere_id(id)
     
