@@ -187,10 +187,6 @@ supabase_client = SupabaseClient(st.secrets["SUPABASE_URL"], st.secrets["SUPABAS
 
 
 def login():
-    # Verifica se o usuário já está autenticado
-    if 'autenticado' in st.session_state and st.session_state['autenticado']:
-        return True
-    
     with st.form(key='user_form'):
         email = st.text_input("Digite seu email: ")
         senha = st.text_input("Digite sua senha: ", type="password")
@@ -198,10 +194,11 @@ def login():
         # Botão para autenticar usuário
         submit_button = st.form_submit_button('Autenticar')
         if submit_button:
-            success, _ = supabase_client.autentica_dados(email, senha)
+            success, api_key = supabase_client.autentica_dados(email, senha)
             if success:
                 st.success("Login bem-sucedido!")
-                st.session_state['autenticado'] = True  # Define a sessão como autenticada
+                st.session_state['autenticado'] = True
+                st.session_state['api_key'] = api_key  # Armazena a API key no estado da sessão
                 return True
             else:
                 st.error("Email ou senha inválidos")
@@ -235,6 +232,8 @@ st.title('🤖 ChatBot UERJ')
 
 if 'autenticado' not in st.session_state:
     st.session_state['autenticado'] = False  # Inicializa a sessão como não autenticada
+if 'api_key' not in st.session_state:
+    st.session_state['api_key'] = ''  # Inicializa a API key como vazia
 if login():
     with st.expander('Sobre essa aplicação'):
       st.markdown('*O que essa aplicação pode fazer?*')
@@ -245,7 +244,8 @@ if login():
     
     
     st.subheader('Insira seu Documento e sua Key Para inicializar')
-    user_key = st.text_input('Digite sua key:', key='chave')
+    if st.session_state['autenticado']:
+        user_key = st.session_state['api_key']
     uploaded_file = st.file_uploader('Envie um documento PDF:', type=['pdf'])
     
     USER = "user"
