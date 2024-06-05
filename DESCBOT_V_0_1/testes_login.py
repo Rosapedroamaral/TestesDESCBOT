@@ -56,8 +56,9 @@ class SupabaseClient:
         insert_response = self.client.table("Registros").insert(data).execute()
     
         # Verificar se houve erro na inserção e informar ao usuário
-        if insert_response.error:
-            print("Erro ao inserir os dados: ", insert_response.error.message)
+        if insert_response.status_code != 200:
+            print("Erro ao inserir os dados: ", insert_response)
+            return False
             if 'APIKey' in insert_response.error.message:
                 print("A chave API fornecida é inválida ou já está em uso.")
             return False
