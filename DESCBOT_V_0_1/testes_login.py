@@ -213,7 +213,6 @@ def login():
             nome = st.text_input("Digite seu nome para registro: ", key='nome_registro')
             email_registro = st.text_input("Digite seu email para registro: ", key='email_registro')
             senha_registro = st.text_input("Digite sua senha para registro: ", type="password", key='senha_registro')
-            st.markdown("chave API","https://testesdescbot2.streamlit.app/tutorialchatpdf")
             user_api_key = st.text_input("Digite sua chave API para registro: ", key='user_api_key')
             
             if nome and email_registro and senha_registro and user_api_key:
